@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import {
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import {
     Autocomplete,
     Button,
@@ -35,15 +41,43 @@ const useSettled = (value, delay) => {
     return settled;
 };
 
+const ZOOM_MARGIN = 8; // keep the enlarged card this far inside the window
+
 /**
  * Hovering or focusing the preview shows the full-size card, big enough to
- * read, in the middle of the screen. The large image only loads then; the
- * small one fills in while it does.
+ * read, centered over the thumbnail but kept inside the window. The large
+ * image only loads then; the small one fills in while it does.
  */
 const CardPreview = ({ card }) => {
     const [zoomed, setZoomed] = useState(false);
+    const thumbRef = useRef(null);
+    const zoomRef = useRef(null);
     const show = () => setZoomed(true);
     const hide = () => setZoomed(false);
+
+    // Position before paint. offsetWidth/Height ignore the zoom-in animation's
+    // scale, so this measures the card's final size.
+    useLayoutEffect(() => {
+        const thumb = thumbRef.current;
+        const zoom = zoomRef.current;
+        if (!thumb || !zoom) return;
+        const t = thumb.getBoundingClientRect();
+        const place = (center, size, room) =>
+            Math.min(
+                Math.max(center - size / 2, ZOOM_MARGIN),
+                room - size - ZOOM_MARGIN
+            );
+        zoom.style.left = `${place(
+            t.left + t.width / 2,
+            zoom.offsetWidth,
+            window.innerWidth
+        )}px`;
+        zoom.style.top = `${place(
+            t.top + t.height / 2,
+            zoom.offsetHeight,
+            window.innerHeight
+        )}px`;
+    }, [zoomed, card?.id]);
 
     if (!card) {
         return (
@@ -54,6 +88,7 @@ const CardPreview = ({ card }) => {
     }
     return (
         <div
+            ref={thumbRef}
             className="search__preview search__preview--card"
             tabIndex={0}
             aria-label={`${card.name}: hover or focus to enlarge`}
@@ -71,6 +106,7 @@ const CardPreview = ({ card }) => {
             />
             {zoomed && (
                 <div
+                    ref={zoomRef}
                     className="card-zoom"
                     style={{
                         backgroundImage: `url(${cardImageUrl(card.id)})`,

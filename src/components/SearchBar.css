@@ -42,19 +42,19 @@
 }
 
 /*
- * The enlarged card: centered, about half the window's height (never wider
- * than the window). Fixed, so the preview's overflow doesn't clip it;
- * ignores the pointer, so the hover stays on the preview underneath.
+ * The enlarged card: about half the window's height (never wider than the
+ * window). SearchBar.js centers it over the thumbnail, kept inside the
+ * window. Fixed, so the preview's overflow doesn't clip it; ignores the
+ * pointer, so the hover stays on the thumbnail underneath.
  */
 .search__preview .card-zoom {
     position: fixed;
-    top: 50%;
-    left: 50%;
+    top: 0;
+    left: 0;
     z-index: 1400;
     width: min(94vw, calc(50vh * 813 / 1185));
     aspect-ratio: 813 / 1185;
     height: auto;
-    transform: translate(-50%, -50%);
     border-radius: 12px;
     overflow: hidden;
     background-size: cover;
@@ -71,7 +71,7 @@
 @keyframes card-zoom-in {
     from {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(0.9);
+        transform: scale(0.9);
     }
 }
 
