@@ -10,6 +10,19 @@
     border-radius: var(--radius);
 }
 
+.filters__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: calc(-1 * var(--space-2));
+}
+
+.filters__header h2 {
+    margin: 0;
+    font-size: var(--text-md);
+    font-weight: 700;
+}
+
 .filters__group {
     margin: 0;
     padding: 0;
@@ -27,6 +40,12 @@
     color: var(--muted);
 }
 
+/* Keep the slider's end handles inside the panel. */
+.filters__group .MuiSlider-root {
+    width: calc(100% - 20px);
+    margin: 0 10px;
+}
+
 .filters__chips {
     display: flex;
     flex-wrap: wrap;
@@ -39,4 +58,31 @@
     align-items: center;
     font-size: var(--text-sm);
     color: var(--muted);
+}
+
+/*
+ * Wide screens: a sidebar pinned to the right, so opening it doesn't push the
+ * results down. The page gives up just enough room on the right for the
+ * centered content (up to the 880px table) to clear it:
+ *   table right edge (100vw - padding + 880px) / 2  <=  100vw - 368px
+ * which needs padding-right >= 1616px - 100vw.
+ */
+@media (min-width: 1200px) {
+    .filters {
+        position: fixed;
+        top: 56px; /* below the settings button */
+        right: var(--space-6);
+        z-index: 10;
+        width: 320px;
+        max-height: calc(100vh - 56px - 72px); /* clear of the footer */
+        margin-top: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        background: var(--bg);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    #home:has(.filters) {
+        padding-right: max(var(--space-4), calc(1616px - 100vw));
+    }
 }

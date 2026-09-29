@@ -124,6 +124,7 @@ const SearchBar = ({ monsters, value, onChange, loading, actions }) => {
                     filters={filters}
                     onChange={changeFilters}
                     matchCount={options.length}
+                    onClose={() => setShowFilters(false)}
                 />
             )}
         </div>

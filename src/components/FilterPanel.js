@@ -1,10 +1,12 @@
 import {
     Button,
     Chip,
+    IconButton,
     Slider,
     ToggleButton,
     ToggleButtonGroup,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import {
     ATTRIBUTES,
     CARD_TYPES,
@@ -38,11 +40,22 @@ const ChipGroup = ({ label, values, selected, onChange }) => (
     </fieldset>
 );
 
-const FilterPanel = ({ filters, onChange, matchCount }) => {
+/** Inline under the search box; a sidebar on wide screens (see the CSS). */
+const FilterPanel = ({ filters, onChange, matchCount, onClose }) => {
     const set = (changes) => onChange({ ...filters, ...changes });
 
     return (
-        <div className="filters">
+        <aside className="filters" aria-label="Filters">
+            <div className="filters__header">
+                <h2>Filters</h2>
+                <IconButton
+                    size="small"
+                    aria-label="Close filters"
+                    onClick={onClose}
+                >
+                    <CloseIcon fontSize="small" />
+                </IconButton>
+            </div>
             <ChipGroup
                 label="Attribute"
                 values={ATTRIBUTES}
@@ -94,7 +107,7 @@ const FilterPanel = ({ filters, onChange, matchCount }) => {
                     Clear filters
                 </Button>
             </div>
-        </div>
+        </aside>
     );
 };
 
