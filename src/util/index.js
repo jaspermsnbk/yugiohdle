@@ -1,3 +1,12 @@
 import { callApi } from "./api";
-import { shuffle, getNumberOfDays } from "./helperfuncs";
-export { callApi, shuffle, getNumberOfDays };
+import { findCard, loadMonsters } from "./cards";
+import { getNumberOfDays } from "./helperfuncs";
+import { readJSON, writeJSON } from "./storage";
+export {
+    callApi,
+    findCard,
+    getNumberOfDays,
+    loadMonsters,
+    readJSON,
+    writeJSON,
+};

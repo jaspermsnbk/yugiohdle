@@ -4,12 +4,6 @@
     align-items: center;
     flex-flow: column;
 }
-#container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-flow: row wrap;
-}
 
 #form-container{
     display: flex;
@@ -39,7 +33,7 @@
 }
 /* Desktop mode*/
 @media all and (min-width:500px) {
-/* put your css styles in here */
+
 .title{
     max-width: 500px;
 }

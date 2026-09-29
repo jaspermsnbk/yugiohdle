@@ -1,119 +1,108 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Card, Guess } from "../components";
-import { callApi, getNumberOfDays, shuffle } from "../util";
-import logo from  '../util/yu-gi-oh-logo.jpg'
+import { useState } from "react";
+import {
+    Alert,
+    Autocomplete,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Link,
+    TextField,
+} from "@mui/material";
+import { Guess } from "../components";
+import { useGame } from "../hooks/useGame";
+import logo from "../util/yu-gi-oh-logo.jpg";
 import "./Home.css";
-// import * as obj from "../util/lineUp.json";
-const obj = require("../util/lineUp.json")
-import { Autocomplete, Button, Link, TextField } from "@mui/material";
-export const cardOfTheDayContext = React.createContext({});
-const { cardTypes, lineUp } = obj;
-const Home = (props) => {
-    const [cardOfDay, setCardOfDay] = useState({});
-    const [input, setInput] = useState("");
-    const [options, setOptions] = useState([]);
-    const [monsterList, setMonsterList] = useState([])
-    const [guesses, setGuesses] = useState([])
-    const [gameOver,setGameOver] = useState(false)
-    const getAllMonsters = async () => {
-    
-        try {
-            const data = await callApi({
-                type: cardTypes.join(","),
-            });
 
-            return data;
-        } catch (error) {
-            console.error(error);
-        }
-    };
-    /**
-     * calls the api to get all monsters and add them to the autocomplete.
-     */
-    useEffect(() => {
-        const setUpMonsters = async () => {
-            const monsterList = await getAllMonsters();
-            setMonsterList(monsterList)
-            const names = monsterList.reduce((acc, cur) => {
-                acc.push(cur?.name);
-                return acc;
-            }, []);
-            setOptions(names);
-            const index = getNumberOfDays() % lineUp.length;
-            setCardOfDay(await callApi({ id: lineUp[index] }));
-        };
-        setUpMonsters();
-    }, []);
+const guessCount = (n) => `${n} ${n === 1 ? "guess" : "guesses"}`;
+
+const Home = (props) => {
+    const { status, monsters, answer, guesses, won, guess, hasGuessed } =
+        useGame();
+    const [selected, setSelected] = useState(null);
+    const [showWin, setShowWin] = useState(false);
+
+    const canSubmit =
+        status === "ready" && !won && selected && !hasGuessed(selected);
+
     const handleSubmit = (e) => {
-        e.preventDefault()
-        if(input === "null") return;
-        if(monsterList.length < 1) return;
-        if(guesses.filter(g=>g.name === input).length > 0) return;
-        // console.log(monsterList);
-        const Guess = monsterList.filter((m)=>m.name === input)[0]
-        setGuesses(guesses.concat(Guess))
-        if(input === cardOfDay[0].name){
-            alert("YOU WON!")
-            setGameOver(true)
-        }
-        
-    }
+        e.preventDefault();
+        if (!canSubmit) return;
+        if (guess(selected)) setShowWin(true);
+    };
+
     return (
         <div {...props} id="home">
             <img className="title" src={logo} alt={"yu-gi-oh"}></img>
             <div id="form-container">
                 <div className="question">Enter a couple of Guesses</div>
-                <Autocomplete
-                    disablePortal
-                    
-                    loading={options.length < 1}
-                    loadingText="Loading"
-                    options={options}
-                    sx={{ width: 300 }}
-                    renderInput={(params) => (
-                        <TextField {...params} label="Monster" />
-                    )}
-                    onChange={(e,v)=>{
-                        setInput(v)
-                
-                    }}
-                />
-                <Button 
-                onClick={handleSubmit}
-                disabled={gameOver}
-                style={{margin:"10px"}}
-                >Submit</Button>
-    
-                <cardOfTheDayContext.Provider value={cardOfDay}>
-                    <div className="guess-container">
-                        
-                        
-                        <Guess
-                            isTitle={true}
-                            monster={{
-                                name: "NAME",
-                                atk: "ATK",
-                                def: "DEF",
-                                attribute: "ATTR",
-                                level: "LVL",
-                            }}
-                        /> 
-                        
-                        {
-                        guesses && guesses.length ? guesses.map( (g,i) => <Guess key={i} monster={g}/>) : <div style={{textAlign:"center"}}> </div> 
-                        }
+                {status === "error" ? (
+                    <Alert severity="error">
+                        Couldn't load the card list. Check your connection and
+                        refresh the page.
+                    </Alert>
+                ) : (
+                    <>
+                        <Autocomplete
+                            disablePortal
+                            loading={status === "loading"}
+                            loadingText="Loading"
+                            options={monsters}
+                            getOptionLabel={(m) => m.name}
+                            isOptionEqualToValue={(a, b) => a.id === b.id}
+                            value={selected}
+                            sx={{ width: 300 }}
+                            renderInput={(params) => (
+                                <TextField {...params} label="Monster" />
+                            )}
+                            onChange={(_, v) => setSelected(v)}
+                        />
+                        <Button
+                            onClick={handleSubmit}
+                            disabled={!canSubmit}
+                            style={{ margin: "10px" }}
+                        >
+                            Submit
+                        </Button>
+                    </>
+                )}
+                {won && (
+                    <div className="question">
+                        Solved in {guessCount(guesses.length)}. Come back
+                        tomorrow for a new card!
                     </div>
-                </cardOfTheDayContext.Provider>
+                )}
+
+                <div className="guess-container">
+                    <Guess isTitle />
+                    {guesses.map((g) => (
+                        <Guess key={g.id} monster={g} answer={answer} />
+                    ))}
+                </div>
             </div>
+
+            <Dialog open={showWin} onClose={() => setShowWin(false)}>
+                <DialogTitle>You won!</DialogTitle>
+                <DialogContent>
+                    Today's card was <b>{answer?.name}</b>. You found it in{" "}
+                    {guessCount(guesses.length)}.
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setShowWin(false)}>Close</Button>
+                </DialogActions>
+            </Dialog>
+
             <div className="footer">
                 {"a side project by Jasper Mesenbrink "}
-                <Link 
-                component={Button}
-                href="https://github.com/jaspermsnbk/yugiohdle"
-                color={"primary"}
-                target="_blank"
-                >GitHub</Link> 
-                {/* <a href="https://github.com/jaspermsnbk/yugiohdle" target="_blank">GitHub</a> */}
+                <Link
+                    component={Button}
+                    href="https://github.com/jaspermsnbk/yugiohdle"
+                    color={"primary"}
+                    target="_blank"
+                >
+                    GitHub
+                </Link>
             </div>
         </div>
     );
