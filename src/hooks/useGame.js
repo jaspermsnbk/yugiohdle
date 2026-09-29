@@ -81,6 +81,7 @@ export const useGame = () => {
     };
 
     return {
+        day,
         status,
         monsters,
         answer,

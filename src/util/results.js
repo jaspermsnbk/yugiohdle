@@ -69,3 +69,30 @@ export const compareGuess = (monster, answer) => {
         },
     ];
 };
+
+export const RESULT_TILE = {
+    match: "match",
+    higher: "close",
+    lower: "close",
+    wrong: "wrong",
+};
+
+const EMOJI = { match: "🟩", close: "🟨", wrong: "🟥" };
+
+/** Tile kinds ("match" | "close" | "wrong") for every guess, one row each. */
+export const scoreRows = (guesses, answer) =>
+    guesses.map((g) =>
+        compareGuess(g, answer).map(({ result }) => RESULT_TILE[result])
+    );
+
+export const guessCount = (n) => `${n} ${n === 1 ? "guess" : "guesses"}`;
+
+/** Wordle-style text for sharing a finished game. */
+export const shareText = (guesses, answer, day) =>
+    [
+        `Yugiohdle #${day} — ${guessCount(guesses.length)}`,
+        ...scoreRows(guesses, answer).map((row) =>
+            row.map((kind) => EMOJI[kind]).join("")
+        ),
+        window.location.origin,
+    ].join("\n");

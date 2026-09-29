@@ -1,0 +1,16 @@
+.score-grid {
+    display: inline-flex;
+    flex-flow: column;
+    gap: 3px;
+}
+
+.score-grid__row {
+    display: flex;
+    gap: 3px;
+}
+
+.score-grid__cell {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+}

@@ -1,24 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Alert, Autocomplete, Button, Link, TextField } from "@mui/material";
 import {
-    Alert,
-    Autocomplete,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Link,
-    TextField,
-} from "@mui/material";
-import { Guess, GuessHeader } from "../components";
+    Confetti,
+    Guess,
+    GuessHeader,
+    ScoreGrid,
+    ShareButton,
+    WinDialog,
+} from "../components";
 import { useGame } from "../hooks/useGame";
+import { guessCount } from "../util/results";
 import logo from "../util/yu-gi-oh-logo.jpg";
 import "./Home.css";
 
-const guessCount = (n) => `${n} ${n === 1 ? "guess" : "guesses"}`;
+// Wait for the winning row's tiles to finish flipping before celebrating.
+const WIN_DELAY_MS = 900;
+const CONFETTI_MS = 3500;
 
 const Home = (props) => {
     const {
+        day,
         status,
         monsters,
         answer,
@@ -30,6 +31,30 @@ const Home = (props) => {
     } = useGame();
     const [selected, setSelected] = useState(null);
     const [showWin, setShowWin] = useState(false);
+    const [celebrating, setCelebrating] = useState(false);
+    const [justWon, setJustWon] = useState(false);
+
+    useEffect(() => {
+        if (!justWon) return;
+        const reduceMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches;
+        const show = setTimeout(
+            () => {
+                setShowWin(true);
+                setCelebrating(true);
+            },
+            reduceMotion ? 0 : WIN_DELAY_MS
+        );
+        const stop = setTimeout(
+            () => setCelebrating(false),
+            WIN_DELAY_MS + CONFETTI_MS
+        );
+        return () => {
+            clearTimeout(show);
+            clearTimeout(stop);
+        };
+    }, [justWon]);
 
     const canSubmit =
         status === "ready" && !won && selected && !hasGuessed(selected);
@@ -37,7 +62,7 @@ const Home = (props) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!canSubmit) return;
-        if (guess(selected)) setShowWin(true);
+        if (guess(selected)) setJustWon(true);
     };
 
     return (
@@ -76,9 +101,18 @@ const Home = (props) => {
                     </>
                 )}
                 {won && (
-                    <div className="status-line">
-                        Solved in {guessCount(guesses.length)}. Come back
-                        tomorrow for a new card!
+                    <div className="solved">
+                        <div className="status-line">
+                            Solved in {guessCount(guesses.length)}. Come back
+                            tomorrow for a new card!
+                        </div>
+                        <ScoreGrid guesses={guesses} answer={answer} />
+                        <ShareButton
+                            guesses={guesses}
+                            answer={answer}
+                            day={day}
+                            size="small"
+                        />
                     </div>
                 )}
 
@@ -95,16 +129,14 @@ const Home = (props) => {
                 </div>
             </div>
 
-            <Dialog open={showWin} onClose={() => setShowWin(false)}>
-                <DialogTitle>You won!</DialogTitle>
-                <DialogContent>
-                    Today's card was <b>{answer?.name}</b>. You found it in{" "}
-                    {guessCount(guesses.length)}.
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setShowWin(false)}>Close</Button>
-                </DialogActions>
-            </Dialog>
+            <WinDialog
+                open={showWin}
+                onClose={() => setShowWin(false)}
+                guesses={guesses}
+                answer={answer}
+                day={day}
+            />
+            {celebrating && <Confetti />}
 
             <div className="footer">
                 {"a side project by Jasper Mesenbrink "}

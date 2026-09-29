@@ -36,3 +36,17 @@ body {
     font-family: var(--font);
     -webkit-font-smoothing: antialiased;
 }
+
+/* Result colors, shared by the results table and the score grid. */
+.tile--match {
+    background: var(--match);
+    color: var(--match-text);
+}
+.tile--close {
+    background: var(--close);
+    color: var(--close-text);
+}
+.tile--wrong {
+    background: var(--wrong);
+    color: var(--wrong-text);
+}

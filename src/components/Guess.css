@@ -38,19 +38,6 @@
     font-weight: 700;
 }
 
-.tile--match {
-    background: var(--match);
-    color: var(--match-text);
-}
-.tile--close {
-    background: var(--close);
-    color: var(--close-text);
-}
-.tile--wrong {
-    background: var(--wrong);
-    color: var(--wrong-text);
-}
-
 .tile__icon {
     opacity: 0.9;
 }

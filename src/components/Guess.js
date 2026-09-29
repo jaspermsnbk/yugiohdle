@@ -2,7 +2,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import CheckIcon from "@mui/icons-material/Check";
-import { COLUMNS, compareGuess } from "../util/results";
+import { COLUMNS, compareGuess, RESULT_TILE } from "../util/results";
 import "./Guess.css";
 
 // Icons repeat what the tile color says, for colorblind players.
@@ -11,13 +11,6 @@ const ICONS = {
     higher: KeyboardArrowUpIcon,
     lower: KeyboardArrowDownIcon,
     wrong: CloseIcon,
-};
-
-const TILE_CLASS = {
-    match: "tile--match",
-    higher: "tile--close",
-    lower: "tile--close",
-    wrong: "tile--wrong",
 };
 
 export const GuessHeader = () => (
@@ -38,7 +31,7 @@ const Guess = ({ monster, answer, animate }) => (
             return (
                 <div
                     key={key}
-                    className={`tile tile--${key} ${TILE_CLASS[result]}`}
+                    className={`tile tile--${key} tile--${RESULT_TILE[result]}`}
                     style={{ "--i": i }}
                 >
                     <span className="tile__value">{label}</span>

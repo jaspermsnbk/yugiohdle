@@ -1,0 +1,38 @@
+.confetti {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1400; /* above MUI dialogs (1300) */
+}
+
+.confetti__piece {
+    position: absolute;
+    top: -16px;
+    left: var(--x);
+    width: 8px;
+    height: 14px;
+    border-radius: 2px;
+    opacity: 0;
+    animation: confetti-fall var(--duration) ease-in var(--delay) forwards;
+}
+
+@keyframes confetti-fall {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) rotate(0);
+    }
+    85% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--drift), 105vh) rotate(var(--spin));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .confetti {
+        display: none;
+    }
+}
