@@ -1,12 +1,15 @@
 // Compares a guess against the answer, column by column. Shared by the
 // results table and anything else that summarizes a guess, so they agree.
 
+// `short` labels are used on narrow screens.
 export const COLUMNS = [
     { key: "name", label: "Name" },
     { key: "atk", label: "ATK" },
     { key: "def", label: "DEF" },
-    { key: "attribute", label: "Attribute" },
-    { key: "level", label: "Level" },
+    { key: "attribute", label: "Attribute", short: "Attr" },
+    { key: "level", label: "Level", short: "Lvl" },
+    { key: "race", label: "Type" },
+    { key: "frame", label: "Frame" },
 ];
 
 /** Link monsters have a Link rating instead of a level; the two never compare equal. */
@@ -31,6 +34,28 @@ const compare = (guess, answer, numeric) => {
     if (guess === "?" || answer === "?") return "wrong";
     if (numeric) return guess > answer ? "lower" : "higher";
     return "wrong";
+};
+
+/** The API's frameType, e.g. "synchro_pendulum", as "Synchro Pendulum". */
+export const frameLabel = (frameType) =>
+    frameType
+        ?.split("_")
+        .map((part) =>
+            part === "xyz" ? "XYZ" : part[0].toUpperCase() + part.slice(1)
+        )
+        .join(" ");
+
+/**
+ * Card frames match exactly, or "partial" when they share a part: Fusion vs
+ * Fusion Pendulum, or two different Pendulum frames.
+ */
+const compareFrame = (guess, answer) => {
+    if (!guess || !answer) return "wrong";
+    if (guess === answer) return "match";
+    const answerParts = answer.split("_");
+    return guess.split("_").some((part) => answerParts.includes(part))
+        ? "partial"
+        : "wrong";
 };
 
 /** Returns one { key, label, result } cell per column in COLUMNS. */
@@ -72,6 +97,16 @@ export const compareGuess = (monster, answer) => {
                 true
             ),
         },
+        {
+            key: "race",
+            label: display(monster.race || null),
+            result: compare(monster.race || null, answer.race || null, false),
+        },
+        {
+            key: "frame",
+            label: display(frameLabel(monster.frameType)),
+            result: compareFrame(monster.frameType, answer.frameType),
+        },
     ];
 };
 
@@ -79,6 +114,7 @@ export const RESULT_TILE = {
     match: "match",
     higher: "close",
     lower: "close",
+    partial: "close",
     wrong: "wrong",
 };
 

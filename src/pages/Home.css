@@ -48,7 +48,7 @@
 }
 
 .guess-container {
-    width: min(720px, 100%);
+    width: min(880px, 100%);
     margin-top: var(--space-4);
 }
 

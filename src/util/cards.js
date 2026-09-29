@@ -2,18 +2,31 @@ import { callApi, getDbVersion } from "./api";
 import { readJSON, removeKey, writeJSON } from "./storage";
 
 // Bump the version when trim() keeps different fields, so old caches refetch.
-const CACHE_KEY = "yugiohdle:monsters:v2";
-const OLD_CACHE_KEYS = ["yugiohdle:monsters"];
+const CACHE_KEY = "yugiohdle:monsters:v3";
+const OLD_CACHE_KEYS = ["yugiohdle:monsters", "yugiohdle:monsters:v2"];
 
 /** Small card artwork. YGOPRODeck asks that images load only when needed. */
 export const cardImageUrl = (id) =>
     `https://images.ygoprodeck.com/images/cards_small/${id}.jpg`;
 
 /** Keeps only the fields the game uses (~1 MB for every monster instead of ~14 MB). */
-const trim = ({ id, name, type, atk, def, level, linkval, attribute }) => ({
+const trim = ({
     id,
     name,
     type,
+    frameType,
+    race,
+    atk,
+    def,
+    level,
+    linkval,
+    attribute,
+}) => ({
+    id,
+    name,
+    type,
+    frameType,
+    race,
     atk,
     def,
     level,

@@ -67,7 +67,7 @@ export const matchesFilters = (monster, filters) => {
     return true;
 };
 
-/** Short stat summary for search results, e.g. "2500 / 2100 · Lv 7 · DARK". */
+/** Short summary for search results, e.g. "2500 / 2100 · Lv 7 · DARK · Spellcaster". */
 export const statLine = (monster) => {
     const rating =
         monster.linkval != null
@@ -77,7 +77,12 @@ export const statLine = (monster) => {
               }`;
     const def =
         monster.linkval != null ? "" : ` / ${stat(monster.def) ?? "?"}`;
-    return [`${stat(monster.atk) ?? "?"}${def}`, rating, monster.attribute]
+    return [
+        `${stat(monster.atk) ?? "?"}${def}`,
+        rating,
+        monster.attribute,
+        monster.race,
+    ]
         .filter(Boolean)
         .join(" · ");
 };
