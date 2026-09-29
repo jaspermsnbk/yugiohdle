@@ -32,7 +32,7 @@ accepted card types:
 
 ### todo list:
 
--   autocomplete search bar
--   guess component
--   integrate with localStorage?
--   refactor
+-   [x] autocomplete search bar
+-   [x] guess component
+-   [x] save progress in localStorage
+-   [x] refactor
