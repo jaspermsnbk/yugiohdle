@@ -35,8 +35,12 @@ const useSettled = (value, delay) => {
     return settled;
 };
 
+/** Grows on hover or keyboard focus so the artwork and text are readable. */
 const CardPreview = ({ card }) => (
-    <div className="search__preview">
+    <div
+        className={`search__preview${card ? " search__preview--card" : ""}`}
+        tabIndex={card ? 0 : undefined}
+    >
         {card ? (
             <img
                 key={card.id}

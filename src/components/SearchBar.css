@@ -13,6 +13,8 @@
 }
 
 .search__preview {
+    --zoom: 2; /* 84px -> 168px, the image's own width, so it stays sharp */
+    position: relative;
     flex: none;
     display: grid;
     place-items: center;
@@ -24,6 +26,26 @@
     font-size: 2rem;
     font-weight: 700;
     overflow: hidden;
+    transform-origin: top left; /* grow over the page, never off its left edge */
+    transition: transform 150ms ease-out, box-shadow 150ms ease-out;
+}
+
+.search__preview--card {
+    cursor: zoom-in;
+}
+
+.search__preview--card:hover,
+.search__preview--card:focus-visible {
+    z-index: 20; /* above the rows and the filter sidebar */
+    transform: scale(var(--zoom));
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .search__preview {
+        transition: none;
+    }
 }
 
 .search__preview img {
@@ -68,6 +90,7 @@
 
 @media (max-width: 500px) {
     .search__preview {
+        --zoom: 2.8; /* 60px -> 168px */
         width: 60px;
         height: 88px;
         font-size: 1.5rem;
