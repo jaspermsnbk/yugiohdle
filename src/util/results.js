@@ -17,13 +17,18 @@ const rating = (monster) =>
 
 const display = (value) => value ?? "—";
 
+/** The API uses -1 for a "?" ATK/DEF. */
+export const stat = (value) => (value != null && value < 0 ? "?" : value);
+
 /**
  * "match", "higher"/"lower" (the answer's value is higher/lower than the
- * guess), or "wrong". Missing values (e.g. a Link monster's DEF) never match.
+ * guess), or "wrong". Missing values (e.g. a Link monster's DEF) never match,
+ * and a "?" stat only matches another "?".
  */
 const compare = (guess, answer, numeric) => {
     if (guess == null || answer == null) return "wrong";
     if (guess === answer) return "match";
+    if (guess === "?" || answer === "?") return "wrong";
     if (numeric) return guess > answer ? "lower" : "higher";
     return "wrong";
 };
@@ -41,13 +46,13 @@ export const compareGuess = (monster, answer) => {
         },
         {
             key: "atk",
-            label: display(monster.atk),
-            result: compare(monster.atk, answer.atk, true),
+            label: display(stat(monster.atk)),
+            result: compare(stat(monster.atk), stat(answer.atk), true),
         },
         {
             key: "def",
-            label: display(monster.def),
-            result: compare(monster.def, answer.def, true),
+            label: display(stat(monster.def)),
+            result: compare(stat(monster.def), stat(answer.def), true),
         },
         {
             key: "attribute",
@@ -87,10 +92,18 @@ export const scoreRows = (guesses, answer) =>
 
 export const guessCount = (n) => `${n} ${n === 1 ? "guess" : "guesses"}`;
 
+export const hintCount = (n) => `${n} ${n === 1 ? "hint" : "hints"}`;
+
+/** "3 guesses" or "3 guesses, 1 hint". */
+export const scoreSummary = (guesses, hints) =>
+    [guessCount(guesses), hints > 0 && hintCount(hints)]
+        .filter(Boolean)
+        .join(", ");
+
 /** Wordle-style text for sharing a finished game. */
-export const shareText = (guesses, answer, day) =>
+export const shareText = (guesses, answer, day, hints = 0) =>
     [
-        `Yugiohdle #${day} — ${guessCount(guesses.length)}`,
+        `Yugiohdle #${day} — ${scoreSummary(guesses.length, hints)}`,
         ...scoreRows(guesses, answer).map((row) =>
             row.map((kind) => EMOJI[kind]).join("")
         ),

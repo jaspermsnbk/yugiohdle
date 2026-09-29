@@ -16,3 +16,11 @@ export const writeJSON = (key, value) => {
         // ignore; the game still works, it just won't remember anything
     }
 };
+
+export const removeKey = (key) => {
+    try {
+        localStorage.removeItem(key);
+    } catch {
+        // ignore
+    }
+};

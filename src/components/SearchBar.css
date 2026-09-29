@@ -1,0 +1,75 @@
+.search {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    width: 100%;
+}
+
+.search__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    width: min(440px, 100%);
+}
+
+.search__preview {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 84px;
+    height: 123px;
+    border-radius: 4px;
+    background: #ececf0;
+    color: var(--muted);
+    font-size: 2rem;
+    font-weight: 700;
+    overflow: hidden;
+}
+
+.search__preview img {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.search__controls {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+}
+
+.search__actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.search__controls .MuiAutocomplete-root {
+    width: 100%;
+}
+
+.search__option {
+    display: flex;
+    flex-flow: column;
+}
+
+.search__option-name {
+    font-weight: 600;
+}
+
+.search__option-stats {
+    font-size: var(--text-xs);
+    color: var(--muted);
+}
+
+@media (max-width: 500px) {
+    .search__preview {
+        width: 60px;
+        height: 88px;
+        font-size: 1.5rem;
+    }
+}

@@ -5,22 +5,20 @@ import {
     DialogContent,
     DialogTitle,
 } from "@mui/material";
-import { guessCount } from "../util/results";
+import { cardImageUrl } from "../util/cards";
+import { scoreSummary } from "../util/results";
 import ScoreGrid from "./ScoreGrid";
 import ShareButton from "./ShareButton";
 import "./WinDialog.css";
 
-const cardImage = (id) =>
-    `https://images.ygoprodeck.com/images/cards_small/${id}.jpg`;
-
-const WinDialog = ({ open, onClose, guesses, answer, day }) => (
+const WinDialog = ({ open, onClose, guesses, answer, day, hints }) => (
     <Dialog open={open} onClose={onClose}>
         <DialogTitle className="win__title">You won!</DialogTitle>
         <DialogContent className="win__content">
             {answer && (
                 <img
                     className="win__card"
-                    src={cardImage(answer.id)}
+                    src={cardImageUrl(answer.id)}
                     alt={answer.name}
                     width={168}
                     height={246}
@@ -29,14 +27,19 @@ const WinDialog = ({ open, onClose, guesses, answer, day }) => (
             <div className="win__summary">
                 <p>
                     Today's card was <b>{answer?.name}</b>. You found it in{" "}
-                    {guessCount(guesses.length)}.
+                    {scoreSummary(guesses.length, hints)}.
                 </p>
                 <ScoreGrid guesses={guesses} answer={answer} />
             </div>
         </DialogContent>
         <DialogActions>
             <Button onClick={onClose}>Close</Button>
-            <ShareButton guesses={guesses} answer={answer} day={day} />
+            <ShareButton
+                guesses={guesses}
+                answer={answer}
+                day={day}
+                hints={hints}
+            />
         </DialogActions>
     </Dialog>
 );

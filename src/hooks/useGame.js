@@ -6,14 +6,16 @@ import {
     readJSON,
     writeJSON,
 } from "../util";
+import { letterCount } from "../util/hint";
 import cardData from "../util/lineUp.json";
 
 const { cardTypes, lineUp } = cardData;
 const PROGRESS_KEY = "yugiohdle:progress";
 
 /**
- * Game state for today's puzzle. Progress is saved as { day, guessIds, won }
- * and only restored on the same day, so every day starts fresh.
+ * Game state for today's puzzle. Progress is saved as
+ * { day, guessIds, won, hints } and only restored on the same day, so every
+ * day starts fresh.
  */
 export const useGame = () => {
     const [day] = useState(getNumberOfDays);
@@ -26,8 +28,10 @@ export const useGame = () => {
         guesses: [],
         restoredCount: 0, // guesses loaded from a previous visit today
         won: false,
+        hints: 0, // name-hint letters revealed
     });
-    const { status, monsters, answer, guesses, restoredCount, won } = game;
+    const { status, monsters, answer, guesses, restoredCount, won, hints } =
+        game;
 
     useEffect(() => {
         let cancelled = false;
@@ -39,17 +43,18 @@ export const useGame = () => {
             if (cancelled) return;
 
             const saved = readJSON(PROGRESS_KEY);
-            const restored =
-                saved?.day === day
-                    ? saved.guessIds.map((id) => byId.get(id)).filter(Boolean)
-                    : [];
+            const today = saved?.day === day ? saved : null;
+            const restored = (today?.guessIds ?? [])
+                .map((id) => byId.get(id))
+                .filter(Boolean);
             setGame({
                 status: "ready",
                 monsters: list,
                 answer: target,
                 guesses: restored,
                 restoredCount: restored.length,
-                won: saved?.day === day && saved.won,
+                won: Boolean(today?.won),
+                hints: today?.hints ?? 0,
             });
         };
 
@@ -64,20 +69,33 @@ export const useGame = () => {
 
     const hasGuessed = (monster) => guesses.some((g) => g.id === monster?.id);
 
+    const update = (changes) => {
+        const next = { guesses, won, hints, ...changes };
+        setGame((g) => ({ ...g, ...changes }));
+        writeJSON(PROGRESS_KEY, {
+            day,
+            guessIds: next.guesses.map((g) => g.id),
+            won: next.won,
+            hints: next.hints,
+        });
+    };
+
     /** Records a guess and returns true if it was the answer. */
     const guess = (monster) => {
         if (status !== "ready" || won || !monster || hasGuessed(monster)) {
             return false;
         }
-        const next = [...guesses, monster];
         const isWin = monster.id === answer.id;
-        setGame((g) => ({ ...g, guesses: next, won: isWin }));
-        writeJSON(PROGRESS_KEY, {
-            day,
-            guessIds: next.map((g) => g.id),
-            won: isWin,
-        });
+        update({ guesses: [...guesses, monster], won: isWin });
         return isWin;
+    };
+
+    const canHint =
+        status === "ready" && !won && hints < letterCount(answer.name);
+
+    /** Reveals one more letter of the answer's name. */
+    const takeHint = () => {
+        if (canHint) update({ hints: hints + 1 });
     };
 
     return {
@@ -88,7 +106,10 @@ export const useGame = () => {
         guesses,
         restoredCount,
         won,
+        hints,
         guess,
         hasGuessed,
+        canHint,
+        takeHint,
     };
 };

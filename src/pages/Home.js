@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import { Alert, Autocomplete, Button, Link, TextField } from "@mui/material";
+import { Alert, Button, Link } from "@mui/material";
 import {
     Confetti,
     Guess,
     GuessHeader,
+    NameHint,
     ScoreGrid,
+    SearchBar,
     ShareButton,
     WinDialog,
 } from "../components";
 import { useGame } from "../hooks/useGame";
-import { guessCount } from "../util/results";
+import { scoreSummary } from "../util/results";
 import logo from "../util/yu-gi-oh-logo.jpg";
 import "./Home.css";
 
@@ -26,8 +28,11 @@ const Home = (props) => {
         guesses,
         restoredCount,
         won,
+        hints,
         guess,
         hasGuessed,
+        canHint,
+        takeHint,
     } = useGame();
     const [selected, setSelected] = useState(null);
     const [showWin, setShowWin] = useState(false);
@@ -77,40 +82,43 @@ const Home = (props) => {
                     </Alert>
                 ) : (
                     <>
-                        <Autocomplete
-                            disablePortal
-                            loading={status === "loading"}
-                            loadingText="Loading"
-                            options={monsters}
-                            getOptionLabel={(m) => m.name}
-                            isOptionEqualToValue={(a, b) => a.id === b.id}
+                        {status === "ready" && !won && (
+                            <NameHint
+                                name={answer.name}
+                                revealed={hints}
+                                canHint={canHint}
+                                onHint={takeHint}
+                            />
+                        )}
+                        <SearchBar
+                            monsters={monsters}
                             value={selected}
-                            sx={{ width: 300 }}
-                            renderInput={(params) => (
-                                <TextField {...params} label="Monster" />
-                            )}
-                            onChange={(_, v) => setSelected(v)}
+                            onChange={setSelected}
+                            loading={status === "loading"}
+                            actions={
+                                <Button
+                                    variant="contained"
+                                    onClick={handleSubmit}
+                                    disabled={!canSubmit}
+                                >
+                                    Submit
+                                </Button>
+                            }
                         />
-                        <Button
-                            onClick={handleSubmit}
-                            disabled={!canSubmit}
-                            style={{ margin: "10px" }}
-                        >
-                            Submit
-                        </Button>
                     </>
                 )}
                 {won && (
                     <div className="solved">
                         <div className="status-line">
-                            Solved in {guessCount(guesses.length)}. Come back
-                            tomorrow for a new card!
+                            Solved in {scoreSummary(guesses.length, hints)}.
+                            Come back tomorrow for a new card!
                         </div>
                         <ScoreGrid guesses={guesses} answer={answer} />
                         <ShareButton
                             guesses={guesses}
                             answer={answer}
                             day={day}
+                            hints={hints}
                             size="small"
                         />
                     </div>
@@ -135,6 +143,7 @@ const Home = (props) => {
                 guesses={guesses}
                 answer={answer}
                 day={day}
+                hints={hints}
             />
             {celebrating && <Confetti />}
 

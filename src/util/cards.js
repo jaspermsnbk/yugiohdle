@@ -1,12 +1,19 @@
 import { callApi, getDbVersion } from "./api";
-import { readJSON, writeJSON } from "./storage";
+import { readJSON, removeKey, writeJSON } from "./storage";
 
-const CACHE_KEY = "yugiohdle:monsters";
+// Bump the version when trim() keeps different fields, so old caches refetch.
+const CACHE_KEY = "yugiohdle:monsters:v2";
+const OLD_CACHE_KEYS = ["yugiohdle:monsters"];
 
-/** Keeps only the fields the game uses (~0.9 MB for every monster instead of ~14 MB). */
-const trim = ({ id, name, atk, def, level, linkval, attribute }) => ({
+/** Small card artwork. YGOPRODeck asks that images load only when needed. */
+export const cardImageUrl = (id) =>
+    `https://images.ygoprodeck.com/images/cards_small/${id}.jpg`;
+
+/** Keeps only the fields the game uses (~1 MB for every monster instead of ~14 MB). */
+const trim = ({ id, name, type, atk, def, level, linkval, attribute }) => ({
     id,
     name,
+    type,
     atk,
     def,
     level,
@@ -32,6 +39,7 @@ export const loadMonsters = async (types) => {
     }
 
     const monsters = (await callApi({ type: typeKey })).map(trim);
+    OLD_CACHE_KEYS.forEach(removeKey);
     writeJSON(CACHE_KEY, { version, types: typeKey, monsters });
     return monsters;
 };
