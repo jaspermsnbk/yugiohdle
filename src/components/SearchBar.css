@@ -42,8 +42,8 @@
 }
 
 /*
- * The enlarged card: centered, as large as the window allows up to the
- * image's own 813×1185. Fixed, so the preview's overflow doesn't clip it;
+ * The enlarged card: centered, about half the window's height (never wider
+ * than the window). Fixed, so the preview's overflow doesn't clip it;
  * ignores the pointer, so the hover stays on the preview underneath.
  */
 .search__preview .card-zoom {
@@ -51,7 +51,7 @@
     top: 50%;
     left: 50%;
     z-index: 1400;
-    width: min(813px, 94vw, calc(94vh * 813 / 1185));
+    width: min(94vw, calc(50vh * 813 / 1185));
     aspect-ratio: 813 / 1185;
     height: auto;
     transform: translate(-50%, -50%);
