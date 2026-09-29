@@ -11,7 +11,15 @@ import ScoreGrid from "./ScoreGrid";
 import ShareButton from "./ShareButton";
 import "./WinDialog.css";
 
-const WinDialog = ({ open, onClose, guesses, answer, day, hints }) => (
+const WinDialog = ({
+    open,
+    onClose,
+    guesses,
+    answer,
+    day,
+    hints,
+    generations,
+}) => (
     <Dialog open={open} onClose={onClose}>
         <DialogTitle className="win__title">You won!</DialogTitle>
         <DialogContent className="win__content">
@@ -39,6 +47,7 @@ const WinDialog = ({ open, onClose, guesses, answer, day, hints }) => (
                 answer={answer}
                 day={day}
                 hints={hints}
+                generations={generations}
             />
         </DialogActions>
     </Dialog>

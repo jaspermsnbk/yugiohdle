@@ -1,0 +1,13 @@
+{
+    "_comment": "Anime eras by a card's first release (earlier of TCG/OCG). Most start with the first product of their mechanic; SEVENS and Go Rush!! start at their anime premieres. Used by scripts/buildLineUp.js and the app.",
+    "generations": [
+        { "id": "dm", "name": "Duel Monsters", "from": "1999-01-01" },
+        { "id": "gx", "name": "GX", "from": "2004-12-18" },
+        { "id": "5ds", "name": "5D's", "from": "2008-03-15" },
+        { "id": "zexal", "name": "ZEXAL", "from": "2011-03-19" },
+        { "id": "arcv", "name": "ARC-V", "from": "2014-03-21" },
+        { "id": "vrains", "name": "VRAINS", "from": "2017-03-25" },
+        { "id": "sevens", "name": "SEVENS", "from": "2020-04-04" },
+        { "id": "gorush", "name": "Go Rush!!", "from": "2022-04-03" }
+    ]
+}

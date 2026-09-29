@@ -1,0 +1,23 @@
+.settings__title {
+    font-weight: 700 !important;
+}
+
+.settings__heading {
+    margin: 0 0 var(--space-1);
+    font-size: var(--text-md);
+}
+
+.settings__note {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--muted);
+}
+
+.settings__locked {
+    margin-bottom: var(--space-2);
+}
+
+.settings__count {
+    font-size: var(--text-sm);
+    color: var(--muted);
+}

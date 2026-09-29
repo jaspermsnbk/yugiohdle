@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Link } from "@mui/material";
+import { Alert, Button, IconButton, Link } from "@mui/material";
+import SettingsIcon from "@mui/icons-material/Settings";
 import {
     Confetti,
     Guess,
@@ -7,10 +8,12 @@ import {
     NameHint,
     ScoreGrid,
     SearchBar,
+    SettingsDialog,
     ShareButton,
     WinDialog,
 } from "../components";
 import { useGame } from "../hooks/useGame";
+import { generationLabel } from "../util/generations";
 import { scoreSummary } from "../util/results";
 import logo from "../util/yu-gi-oh-logo.jpg";
 import "./Home.css";
@@ -33,7 +36,12 @@ const Home = (props) => {
         hasGuessed,
         canHint,
         takeHint,
+        generations,
+        canChangeGenerations,
+        setGenerations,
     } = useGame();
+    const [showSettings, setShowSettings] = useState(false);
+    const eras = generationLabel(generations);
     const [selected, setSelected] = useState(null);
     const [showWin, setShowWin] = useState(false);
     const [celebrating, setCelebrating] = useState(false);
@@ -72,9 +80,19 @@ const Home = (props) => {
 
     return (
         <div {...props} id="home">
+            <IconButton
+                className="settings-button"
+                aria-label="Settings"
+                onClick={() => setShowSettings(true)}
+            >
+                <SettingsIcon />
+            </IconButton>
             <img className="title" src={logo} alt={"yu-gi-oh"}></img>
             <div id="form-container">
                 <div className="question">Enter a couple of Guesses</div>
+                {eras && (
+                    <div className="status-line">Daily card from {eras}</div>
+                )}
                 {status === "error" ? (
                     <Alert severity="error">
                         Couldn't load the card list. Check your connection and
@@ -119,6 +137,7 @@ const Home = (props) => {
                             answer={answer}
                             day={day}
                             hints={hints}
+                            generations={generations}
                             size="small"
                         />
                     </div>
@@ -144,6 +163,14 @@ const Home = (props) => {
                 answer={answer}
                 day={day}
                 hints={hints}
+                generations={generations}
+            />
+            <SettingsDialog
+                open={showSettings}
+                onClose={() => setShowSettings(false)}
+                generations={generations}
+                onChange={setGenerations}
+                locked={status === "ready" && !canChangeGenerations}
             />
             {celebrating && <Confetti />}
 

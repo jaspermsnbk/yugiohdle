@@ -100,10 +100,16 @@ export const scoreSummary = (guesses, hints) =>
         .filter(Boolean)
         .join(", ");
 
-/** Wordle-style text for sharing a finished game. */
-export const shareText = (guesses, answer, day, hints = 0) =>
+/**
+ * Wordle-style text for sharing a finished game. `eras` names the chosen
+ * generations when they aren't all of them, since the card differs then.
+ */
+export const shareText = ({ guesses, answer, day, hints = 0, eras }) =>
     [
-        `Yugiohdle #${day} — ${scoreSummary(guesses.length, hints)}`,
+        `Yugiohdle #${day}${eras ? ` (${eras})` : ""} — ${scoreSummary(
+            guesses.length,
+            hints
+        )}`,
         ...scoreRows(guesses, answer).map((row) =>
             row.map((kind) => EMOJI[kind]).join("")
         ),

@@ -1,9 +1,16 @@
 #home {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-flow: column;
     padding: var(--space-4) var(--space-4) 88px; /* room for the fixed footer */
+}
+
+.settings-button {
+    position: absolute !important;
+    top: var(--space-2);
+    right: var(--space-2);
 }
 
 #form-container {

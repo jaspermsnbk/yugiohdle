@@ -1,17 +1,31 @@
 import { useState } from "react";
 import { Button } from "@mui/material";
 import ShareIcon from "@mui/icons-material/Share";
+import { generationLabel } from "../util/generations";
 import { shareText } from "../util/results";
 
 /**
  * Opens the device share sheet where there is one, otherwise copies the
  * result to the clipboard and says so on the button.
  */
-const ShareButton = ({ guesses, answer, day, hints, ...props }) => {
+const ShareButton = ({
+    guesses,
+    answer,
+    day,
+    hints,
+    generations,
+    ...props
+}) => {
     const [label, setLabel] = useState("Share");
 
     const share = async () => {
-        const text = shareText(guesses, answer, day, hints);
+        const text = shareText({
+            guesses,
+            answer,
+            day,
+            hints,
+            eras: generationLabel(generations),
+        });
         if (navigator.share) {
             try {
                 await navigator.share({ text });
