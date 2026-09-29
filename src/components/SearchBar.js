@@ -6,7 +6,7 @@ import {
     TextField,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import { cardImageUrl } from "../util/cards";
+import { cardImageLargeUrl, cardImageUrl } from "../util/cards";
 import {
     activeFilterCount,
     EMPTY_FILTERS,
@@ -35,13 +35,33 @@ const useSettled = (value, delay) => {
     return settled;
 };
 
-/** Grows on hover or keyboard focus so the artwork and text are readable. */
-const CardPreview = ({ card }) => (
-    <div
-        className={`search__preview${card ? " search__preview--card" : ""}`}
-        tabIndex={card ? 0 : undefined}
-    >
-        {card ? (
+/**
+ * Hovering or focusing the preview shows the full-size card, big enough to
+ * read, in the middle of the screen. The large image only loads then; the
+ * small one fills in while it does.
+ */
+const CardPreview = ({ card }) => {
+    const [zoomed, setZoomed] = useState(false);
+    const show = () => setZoomed(true);
+    const hide = () => setZoomed(false);
+
+    if (!card) {
+        return (
+            <div className="search__preview">
+                <span aria-hidden="true">?</span>
+            </div>
+        );
+    }
+    return (
+        <div
+            className="search__preview search__preview--card"
+            tabIndex={0}
+            aria-label={`${card.name}: hover or focus to enlarge`}
+            onMouseEnter={show}
+            onMouseLeave={hide}
+            onFocus={show}
+            onBlur={hide}
+        >
             <img
                 key={card.id}
                 src={cardImageUrl(card.id)}
@@ -49,11 +69,20 @@ const CardPreview = ({ card }) => (
                 width={84}
                 height={123}
             />
-        ) : (
-            <span aria-hidden="true">?</span>
-        )}
-    </div>
-);
+            {zoomed && (
+                <div
+                    className="card-zoom"
+                    style={{
+                        backgroundImage: `url(${cardImageUrl(card.id)})`,
+                    }}
+                    aria-hidden="true"
+                >
+                    <img key={card.id} src={cardImageLargeUrl(card.id)} alt="" />
+                </div>
+            )}
+        </div>
+    );
+};
 
 /**
  * Monster search with stat details, a card preview and optional filters.

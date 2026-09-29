@@ -9,6 +9,10 @@ const OLD_CACHE_KEYS = ["yugiohdle:monsters", "yugiohdle:monsters:v2"];
 export const cardImageUrl = (id) =>
     `https://images.ygoprodeck.com/images/cards_small/${id}.jpg`;
 
+/** Full-size artwork (813×1185, ~150 KB), for reading the card up close. */
+export const cardImageLargeUrl = (id) =>
+    `https://images.ygoprodeck.com/images/cards/${id}.jpg`;
+
 /** Keeps only the fields the game uses (~1 MB for every monster instead of ~14 MB). */
 const trim = ({
     id,

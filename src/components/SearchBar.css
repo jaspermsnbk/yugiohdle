@@ -13,8 +13,6 @@
 }
 
 .search__preview {
-    --zoom: 2; /* 84px -> 168px, the image's own width, so it stays sharp */
-    position: relative;
     flex: none;
     display: grid;
     place-items: center;
@@ -26,32 +24,61 @@
     font-size: 2rem;
     font-weight: 700;
     overflow: hidden;
-    transform-origin: top left; /* grow over the page, never off its left edge */
-    transition: transform 150ms ease-out, box-shadow 150ms ease-out;
 }
 
 .search__preview--card {
     cursor: zoom-in;
 }
 
-.search__preview--card:hover,
 .search__preview--card:focus-visible {
-    z-index: 20; /* above the rows and the filter sidebar */
-    transform: scale(var(--zoom));
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    outline: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .search__preview {
-        transition: none;
-    }
+    outline: 2px solid #1976d2;
+    outline-offset: 2px;
 }
 
 .search__preview img {
     display: block;
     width: 100%;
     height: 100%;
+}
+
+/*
+ * The enlarged card: centered, as large as the window allows up to the
+ * image's own 813×1185. Fixed, so the preview's overflow doesn't clip it;
+ * ignores the pointer, so the hover stays on the preview underneath.
+ */
+.search__preview .card-zoom {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 1400;
+    width: min(813px, 94vw, calc(94vh * 813 / 1185));
+    aspect-ratio: 813 / 1185;
+    height: auto;
+    transform: translate(-50%, -50%);
+    border-radius: 12px;
+    overflow: hidden;
+    background-size: cover;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+    pointer-events: none;
+    animation: card-zoom-in 150ms ease-out;
+}
+
+.search__preview .card-zoom img {
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes card-zoom-in {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .search__preview .card-zoom {
+        animation: none;
+    }
 }
 
 .search__controls {
@@ -90,7 +117,6 @@
 
 @media (max-width: 500px) {
     .search__preview {
-        --zoom: 2.8; /* 60px -> 168px */
         width: 60px;
         height: 88px;
         font-size: 1.5rem;
