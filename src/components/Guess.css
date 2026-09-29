@@ -1,45 +1,94 @@
-.guess{
+/* The header and every guess share one grid, so columns always line up. */
+.guess {
     display: grid;
-    grid-template: 1fr / 1fr 1fr 1fr 1fr 1fr;
-    min-width: 700px;
-    min-height: 75px;
-    align-items: center;
-    justify-items: center;
-    text-align: center;
-    padding-left: 20px;
-    padding-right: 20px;
-    gap: 5px;   
+    grid-template-columns: minmax(0, 1.6fr) repeat(4, minmax(0, 1fr));
+    gap: var(--space-1);
+    margin-bottom: var(--space-1);
 }
 
-.guesschild{
+.guess--header {
+    margin-bottom: var(--space-2);
+}
+
+.guess__label {
+    text-align: center;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.tile {
     display: flex;
-    flex-flow: row;
+    flex-flow: column;
     justify-content: center;
     align-items: center;
+    gap: 2px;
+    min-height: 56px;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-align: center;
+    overflow-wrap: anywhere;
 }
 
-/* tablet mode*/
-@media all and (min-width:500px) and (max-width:800px) {
-    .guess{
-        min-width: 480px;
-        font-size: small;
-        padding: 0%;
-        
+.tile--name {
+    font-weight: 700;
+}
+
+.tile--match {
+    background: var(--match);
+    color: var(--match-text);
+}
+.tile--close {
+    background: var(--close);
+    color: var(--close-text);
+}
+.tile--wrong {
+    background: var(--wrong);
+    color: var(--wrong-text);
+}
+
+.tile__icon {
+    opacity: 0.9;
+}
+
+/* New guesses flip in one tile after another. */
+.guess--new .tile {
+    animation: tile-flip 450ms ease-out both;
+    animation-delay: calc(var(--i) * 90ms);
+}
+
+@keyframes tile-flip {
+    from {
+        transform: rotateX(90deg);
+        opacity: 0;
+    }
+    to {
+        transform: rotateX(0);
+        opacity: 1;
     }
 }
 
-/* phone mode*/
-@media all and (min-width:0px) and (max-width: 500px) {
-    .guess{
-        min-width: 280px;
-        font-size: smaller;
-        padding: 0%;
-        
-    }
-    .guesschild{
-        display: flex;
-        flex-flow: column;
-        align-items: center;
+@media (prefers-reduced-motion: reduce) {
+    .guess--new .tile {
+        animation: none;
     }
 }
-    
+
+@media (max-width: 500px) {
+    .guess {
+        gap: 3px;
+    }
+    .tile {
+        min-height: 48px;
+        padding: var(--space-1);
+        font-size: var(--text-xs);
+    }
+    .guess__label {
+        font-size: 0.625rem;
+        letter-spacing: 0.02em;
+    }
+}

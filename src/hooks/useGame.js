@@ -24,9 +24,10 @@ export const useGame = () => {
         monsters: [],
         answer: null,
         guesses: [],
+        restoredCount: 0, // guesses loaded from a previous visit today
         won: false,
     });
-    const { status, monsters, answer, guesses, won } = game;
+    const { status, monsters, answer, guesses, restoredCount, won } = game;
 
     useEffect(() => {
         let cancelled = false;
@@ -38,15 +39,17 @@ export const useGame = () => {
             if (cancelled) return;
 
             const saved = readJSON(PROGRESS_KEY);
-            const restored = saved?.day === day;
+            const restored =
+                saved?.day === day
+                    ? saved.guessIds.map((id) => byId.get(id)).filter(Boolean)
+                    : [];
             setGame({
                 status: "ready",
                 monsters: list,
                 answer: target,
-                guesses: restored
-                    ? saved.guessIds.map((id) => byId.get(id)).filter(Boolean)
-                    : [],
-                won: restored && saved.won,
+                guesses: restored,
+                restoredCount: restored.length,
+                won: saved?.day === day && saved.won,
             });
         };
 
@@ -77,5 +80,14 @@ export const useGame = () => {
         return isWin;
     };
 
-    return { status, monsters, answer, guesses, won, guess, hasGuessed };
+    return {
+        status,
+        monsters,
+        answer,
+        guesses,
+        restoredCount,
+        won,
+        guess,
+        hasGuessed,
+    };
 };

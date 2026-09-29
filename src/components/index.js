@@ -1,3 +1,3 @@
-import Guess from "./Guess";
+import Guess, { GuessHeader } from "./Guess";
 
-export { Guess };
+export { Guess, GuessHeader };

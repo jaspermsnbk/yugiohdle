@@ -10,7 +10,7 @@ import {
     Link,
     TextField,
 } from "@mui/material";
-import { Guess } from "../components";
+import { Guess, GuessHeader } from "../components";
 import { useGame } from "../hooks/useGame";
 import logo from "../util/yu-gi-oh-logo.jpg";
 import "./Home.css";
@@ -18,8 +18,16 @@ import "./Home.css";
 const guessCount = (n) => `${n} ${n === 1 ? "guess" : "guesses"}`;
 
 const Home = (props) => {
-    const { status, monsters, answer, guesses, won, guess, hasGuessed } =
-        useGame();
+    const {
+        status,
+        monsters,
+        answer,
+        guesses,
+        restoredCount,
+        won,
+        guess,
+        hasGuessed,
+    } = useGame();
     const [selected, setSelected] = useState(null);
     const [showWin, setShowWin] = useState(false);
 
@@ -68,16 +76,21 @@ const Home = (props) => {
                     </>
                 )}
                 {won && (
-                    <div className="question">
+                    <div className="status-line">
                         Solved in {guessCount(guesses.length)}. Come back
                         tomorrow for a new card!
                     </div>
                 )}
 
                 <div className="guess-container">
-                    <Guess isTitle />
-                    {guesses.map((g) => (
-                        <Guess key={g.id} monster={g} answer={answer} />
+                    <GuessHeader />
+                    {guesses.map((g, i) => (
+                        <Guess
+                            key={g.id}
+                            monster={g}
+                            answer={answer}
+                            animate={i >= restoredCount}
+                        />
                     ))}
                 </div>
             </div>
